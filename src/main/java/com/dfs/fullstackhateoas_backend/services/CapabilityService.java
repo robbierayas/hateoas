@@ -18,25 +18,41 @@ import com.dfs.fullstackhateoas_backend.repository.CapabilityRepository;
 public class CapabilityService {
 
 	private CapabilityRepository capabilityRepository;
-	
+
 	public CapabilityService(CapabilityRepository capabilityRepository) {
 		this.capabilityRepository = capabilityRepository;
 	}
-	public List<Capability> getAllCapabilities(){
+
+	public List<Capability> getAllCapabilities() {
 		return capabilityRepository.findAll();
 	}
+
 	public Capability findCapById(Long id) {
-		return capabilityRepository.findById(id).
-				orElseThrow(() -> new CapabilityException("Capability with ID: "+id+"Not found"));
+		return capabilityRepository.findById(id)
+				.orElseThrow(() -> new CapabilityException("Capability with ID: " + id + "Not found"));
 	}
+
 	public Capability saveCapability(Capability capability) {
 		return capabilityRepository.save(capability);
 	}
-	public ResponseEntity<?> errorMap(BindingResult result){
-		Map<String,String> errorMap = new HashMap<>();
-		for(FieldError error: result.getFieldErrors()) {
-			errorMap.put(error.getField(),error.getDefaultMessage());
+
+	public ResponseEntity<?> errorMap(BindingResult result) {
+		Map<String, String> errorMap = new HashMap<>();
+		for (FieldError error : result.getFieldErrors()) {
+			errorMap.put(error.getField(), error.getDefaultMessage());
 		}
-		return new ResponseEntity<>(errorMap,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
+	}
+
+	public Capability updateCapability(Long id, Capability capability) {
+		return capabilityRepository.findById(id).map(cap -> {
+			cap.setTechStack(capability.getTechStack());
+			cap.setNumOfDevelopers(capability.getNumOfDevelopers());
+			cap.setNumOfAvailableDevelopers(capability.getNumOfAvailableDevelopers());
+			return capabilityRepository.save(cap);
+		}).orElseGet(() -> {
+			return capabilityRepository.save(capability);
+		});
+
 	}
 }

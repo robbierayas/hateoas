@@ -20,7 +20,7 @@ public class Capability {
 	private Long id;
 	
 	@NotBlank(message = "Technology Stack cannot be blank")
-	@NotNull
+	@NotNull(message = "Technology Stack cannot be null")
 	private String techStack;
 	private Integer numOfDevelopers = 0;
 	private Integer numOfAvailableDevelopers = 0;
