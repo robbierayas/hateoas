@@ -2,6 +2,7 @@ package com.dfs.fullstackhateoas_backend.resources;
 
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.dfs.fullstackhateoas_backend.domain.Capability;
@@ -42,5 +43,19 @@ public class CapabilityController {
 		return new Resource<>(capability,
 				linkTo(methodOn(CapabilityController.class).getCapability(id)).withRel("getThisCapability")
 				);
+	}
+	
+	@PostMapping
+	public Object createCapability(@RequestBody Capability capability,BindingResult result) {
+		
+		if(result.hasErrors()) return capabilityService.errorMap(result);
+		
+		Capability newCapability = capabilityService.saveCapability(capability);
+		
+		return new Resource<>(newCapability,
+				linkTo(methodOn(CapabilityController.class).getCapability(newCapability.getId())).withRel("getThisCapability"),
+				linkTo(methodOn(CapabilityController.class).getAllCapabilities()).withRel("getAllCapabilities")
+				);
+		
 	}
 }
